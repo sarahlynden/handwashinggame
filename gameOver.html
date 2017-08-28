@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+ <html>
+   <head>
+        <meta charset="utf-8">
+	<title>Germ Attack!!</title>
+
+	<!-- adjusting to the phone's screen -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- jQuery mobile style sheet -->
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css">
+
+	<!-- your style sheet -->
+	<link rel="stylesheet" href="all.css">
+	
+	<!-- jQuery and jQuery mobile -->
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+
+	<!-- add ProcessingJS -->
+	<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+
+</head>
+	
+	<style>
+	    .ui-page {
+		    background:#CC99FF
+	    } 
+	    div.absolute {
+		    position: absolute;
+		    bottom: 15%;
+	    	width: 1300px;
+	    	height: 200px;
+	    	font-size: 50px; 
+        	font-family: Impact;
+	    }
+	    div.butt {
+		    position: absolute;
+		    bottom: 90%;
+		    right: 75%;
+		    width: 100px;
+		    height: 50px;
+	    }
+	    div.butt2 {
+	    	position: absolute;
+	    	bottom: 65%;
+	    	right: 75%;
+	    	width: 100px;
+	    	height: 50px;
+	    }
+		#funFact{
+			position: absolute;
+			bottom: 50%;
+			right: 75%;
+			width: 150px;
+			height: 200px;
+			background-color: pink;
+			font-family: Impact;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="mycanvas2"></canvas>
+	<embed src="HandwashingsongbyOneRepublic.mp3" autostart="true" loop="true" hidden="true">  
+	
+	
+	<div class="absolute"><h1 style="font-size:200%">GAME OVER</h1></div> <!-- Hand Washing Game Title -->
+	<div class="butt"><a href="Sink.html"><img src="http://germpictures.weebly.com/uploads/4/4/9/8/44984345/9425314_orig.png"> </a></div><!-- QUIT Button -->
+	<div class="butt2"><a href="Sink.html"><img src="http://germpictures.weebly.com/uploads/4/4/9/8/44984345/8478259_orig.png"> </a></div><!-- TRY AGAIN Button -->
+	<div id = "funFact">hello</div>
+	<script type="text/processing" data-processing-target="mycanvas2">
+		var windowWidth = $(window).width();
+		var windowHeight = $(window).height();
+		
+		
+		
+		//random facts
+		
+		facts = ["Tap water has a shelf-life of 6 months, after which chlorine dissipates and bacteria starts to grow.", "There's a breed of bacteria that lives in hairspray.","There are 3,000 types of bacteria.","When two people kiss, they exchange between 10 million and 1 billion bacteria.","Most antibiotics are made from bacteria.","After two weeks of wear, a pair of jeans will have grown a 1,000-strong colony of bacteria on the front, 1,500–2,500 on the back, and 10,000 on the crotch.","The strongest creatures on Earth are gonorrhea bacteria. They can pull 100,000 times their own body weight.","Offices with more male employees have far more bacteria.","In 2013, a bacteria was found in New Zealand that's resistant to every single antibioticknown.","20% of office coffeemugs contain fecal bacteria.","Babies are born with no bacteria in their bodies.","Some 15,152 types of life forms, from insects to bacteria, have been identified on the New York subway.","A newly-discovered species of rust-eating bacteria will have consumed the wreck of the Titanic within 20 years."];
+		funFact = "Fun Fact: " +facts[round(random(0,12))];
+		
+		$("#funFact").text(funFact);
+		
+		
+		//bubbles
+		var Bubble = function(xPos,yPos,pic){
+			this.xPos = xPos;
+			this.yPos = yPos;
+			this.pic = loadImage(pic);
+		
+			this.drawBubble = function(){
+				image(this.pic, this.xPos, this.yPos, 120, 120);
+			};
+			this.moveBubble = function(){
+				this.xPos += random(-1,1);
+				this.xPos %= windowWidth;
+				this.yPos += random(-1,5);
+				this.yPos %= windowHeight;
+			};
+		};
+		var bubble = [];
+		var bubbleImage = "http://germpictures.weebly.com/uploads/4/4/9/8/44984345/6017062_orig.png";
+		for(var i = 0; i < round(random(10, 20)); i++){
+			bubble.push(new Bubble(random(0, windowWidth), random(0, windowHeight), bubbleImage));
+		}
+		
+		void setup(){
+			size(windowWidth,$(window).height());
+		};
+
+		var backgroundPic = loadImage("http://germpictures.weebly.com/uploads/4/4/9/8/44984345/1226509_orig.jpg");
+		void draw(){  
+			image(backgroundPic,0,0,windowWidth,windowHeight);
+			for(var i = 0; i < bubble.length; i++){
+				bubble[i].drawBubble();
+				bubble[i].moveBubble();
+			}	
+		};
+		$(".butt").click(function() {
+			location.href = "index.html";
+		});
+		$(".butt2").click(function() {
+			location.href = "Sink.html";
+		});
+	</script>
+</body>
+ </html>

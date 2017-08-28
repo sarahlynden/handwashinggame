@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Germ Attack!!</title>
+
+	<!-- adjusting to the phone's screen -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- jQuery mobile style sheet -->
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css">
+
+	<!-- jQuery and jQuery mobile -->
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+
+	<!-- add ProcessingJS -->
+	<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+	
+	<link rel="stylesheet" href="all.css">
+</head>
+
+<body>
+
+  <div data-role="page" id="sink">
+    
+	  <div data-role="header">
+		  <h1 id="heading">Sink</h1>
+		  <h2>Attack the Green and King Germs!</h2>
+	  </div><!-- /header -->
+	
+  	<div data-role="content" align="center">
+  	  
+	  
+<div id="time"></div>
+  	  <div class="score">0</div>
+	  <div class ="heart">10</div>
+  		<canvas id="mycanvas"></canvas>
+		<embed src="DanceMusicCut.mp3" autostart="true" loop="true" hidden="true">  
+  	</div><!-- /content -->
+
+  	<div data-role="footer">
+  		<h4><a id="button" href="#">Home</a></h4>
+  	</div><!-- /footer -->
+  </div>
+  
+
+  
+	<script type="text/processing" data-processing-target="mycanvas">
+	
+	  
+	  // Start up
+	  void setup(){
+		  size(windowWidth,windowHeight);
+	  };
+	  
+	  // events (UI)
+	  
+	  var windowWidth = $(window).width();
+	  var windowHeight = $(window).height();
+	  var score = 0;
+	  var heart = 10;
+	  var smallHeart = 0;
+	  
+	  // make window.inc_score (or make an object/class for score)
+		var inc_score = function(amount){
+			score += amount;
+			$(".score").text(score);
+		}
+		var inc_heart = function(amount){
+				heart -= amount;
+				$(".heart").text(heart);
+				if (smallHeart > 6){
+					heart -= 1;
+					$(".heart").text(heart);
+					smallHeart = 0;
+				}
+			
+		}
+		var inc_smallHeart = function(){
+				smallHeart += 1;
+
+		}
+		
+		
+		// this for the scroller
+		
+		current_page="sink";
+
+		function startTimer(duration, display) {
+			var timer = duration, minutes, seconds;
+			setInterval(function () {
+				minutes = parseInt(timer / 60, 10);
+				seconds = parseInt(timer % 60, 10);
+
+				minutes = minutes < 10 ? "0" + minutes : minutes;
+				seconds = seconds < 10 ? "0" + seconds : seconds;
+
+				display.textContent = minutes + ":" + seconds;
+
+				if (--timer < 0 && current_page !== "sink") {
+					clearInterval();
+					//location.href = "Sink.html";
+					regenerate();
+					current_page="sink";
+					$("#time").hide();
+					$("#heading").text("Sink");
+				}
+			}, 1000);
+		}
+		
+		
+		var Person = function(x,y,size,xSpeed,myPic) {
+			this.x = x;
+			this.y = y;
+			this.size = size;
+			this.xSpeed = xSpeed;
+			this.image = loadImage(myPic);
+			
+			this.drawPerson = function(){
+				image(this.image, this.x, this.y, 70, 70);
+				//ellipse(this.x,this.y,this.size,this.size);		
+			}
+		}
+
+		var person;
+  	
+ 
+
+		var Trash = function(x,y,size,xSpeed) {
+			this.x = x;
+			this.y = y;
+			this.size = size;
+			this.xSpeed = xSpeed;
+			this.myColor = color(0, 0, 0);
+			this.trashCan = loadImage("http://germpictures.weebly.com/uploads/4/4/9/8/44984345/8474236_orig.png");
+
+			this.drawTrash = function(){
+				imageMode(CENTER);
+				image(this.trashCan,this.x,this.y,85,85);		
+			}
+
+			this.moveTrash = function(){
+				this.x -= xSpeed;
+				counter  = 0
+				if (this.x < -30) {
+					this.x = windowWidth;
+				}
+			}
+
+			this.collision = function(otherX, otherY) {
+				var dist = sqrt(pow(this.x-otherX,2) + pow(this.y-otherY, 2));
+				return dist < 30;
+			}
+		}
+
+		//var trash;
+		
+		// this for the sink page
+		var Germ = function(xPosition, yPosition, myPic){
+			this.xPosition = xPosition;
+			this.yPosition = yPosition;
+			this.image = loadImage(myPic);
+			
+			
+			this.isClicked = function(){
+				var dist = sqrt(pow((mouseX-this.xPosition),2) + pow((mouseY-this.yPosition),2));
+				return (dist<32);
+			}
+			
+			this.drawGerm = function(){
+				imageMode(CENTER);
+				image(this.image, this.xPosition, this.yPosition, 50, 50);
+			}
+				
+
+			this.move = function(){
+				this.xPosition += random(-2.5,2.5);
+				this.xPosition %= windowWidth;
+				this.yPosition += random(-2.5,2.5);
+				this.yPosition %= windowHeight;
+			}
+		}
+		
+		// initial setup
+		var germGreen = []; 
+		var greenGerm = "http://germpictures.weebly.com/uploads/4/4/9/8/44984345/3018634_orig.png";
+		var germPurple = []; 
+		var purpleGerm = "http://germpictures.weebly.com/uploads/4/4/9/8/44984345/7573559_orig.png";
+		var germKing = []; 
+		var kingGerm = "http://germpictures.weebly.com/uploads/4/4/9/8/44984345/488552_orig.png";
+
+		// reset germ loops
+		void regenerate() {
+			germGreen = []; 
+			germPurple = []; 
+			germKing = []; 
+			for(var i = 0; i < round(random(15, 20)); i++){
+				germGreen.push(new Germ(random(40, 1150), random(30, 500), greenGerm));
+			}	
+			for(var i = 0; i < round(random(15, 20)); i++){
+				germPurple.push(new Germ(random(40, 1150), random(30, 500), purpleGerm));
+			}
+			for(var i = 0; i < round(random(1, 2)); i++){
+				germKing.push(new Germ(random(40, 1150), random(30, 500), kingGerm));
+			}
+		}
+		
+		regenerate();
+		var trash = [];
+  		for(var i = 0; i < 10; i++){
+  			trash.push(new Trash(random(200,455), random(25, 500), 30, random(4,10)));
+  		}
+		
+		//avatar
+  		var supergirl = "http://germpictures.weebly.com/uploads/4/4/9/8/44984345/4047919_orig.png";
+  		person = new Person(200, 600, 50, 2, supergirl);
+		
+		//var x = 5;
+			
+
+	  // ProcessJS evetns (draw, mouseClicked, ...)
+	  
+	  				// user events
+		
+		void keyPressed(){
+		  if (current_page=="sink"){
+		    // nothing
+		  } else if (current_page=="scroller"){
+		    	//console.log(keyCode);
+      		if (keyCode === 32) { // space
+      			person.xSpeed = -1;
+      		}
+		  }
+    	
+    }
+
+		void keyReleased(){
+			if (current_page==="sink"){
+				// nothing
+			} else if (current_page==="scroller"){
+				//console.log(keyCode);
+				if (keyCode === 32) {
+				person.xSpeed = 1;
+				}
+			}
+    		
+		}
+    	
+		void mouseClicked() {
+			if (current_page==="sink"){
+				sinkMouseClicked();
+		} else if (current_page==="scroller"){
+		    scrollerMouseClicked();
+		  }
+		}
+				
+		void scrollerMouseClicked() {
+		  // TODO
+		}
+		
+		void sinkMouseClicked() {
+		  
+			for (var i = germGreen.length-1; i>=0; i--){
+				if(germGreen[i].isClicked()){
+					germGreen.splice(i,1);
+					inc_score(1);
+					
+				}
+				if (germGreen.length===0){
+					location.href = "YouWin.html";
+				}
+			}
+			for (var i = germPurple.length-1; i>=0; i--){
+				if(germPurple[i].isClicked()){
+					//x = x-1;
+					//alert("Lives: " + x);
+					inc_heart(1);
+					germPurple.splice(i,1);
+					
+				}
+				if (heart===0){
+				  location.href = "gameOver.html";
+				}
+			}
+			for (var i = germKing.length-1; i>=0; i--){
+				if(germKing[i].isClicked()){
+					germKing.splice(i,1);
+					
+					//location.href = "Scroller.html";
+					//use jquery
+					//$.mobile.changePage( "#scroller", { transition: "none", changeHash: false });
+					
+					current_page="scroller";
+					
+					// change title/header
+					$("#heading").text("Scroller");
+          
+					// set the timer stuff
+					var halfMinute = 30 * 1,
+					display = document.querySelector('#time');
+					// show time div
+					
+					startTimer(halfMinute, display);
+					$("#time").show();
+				}
+			}
+			
+		
+		};
+		
+
+		
+		
+		var backgroundPic = loadImage("http://germpictures.weebly.com/uploads/4/4/9/8/44984345/3279473_orig.jpg");
+		
+		var counter = 0;
+		void draw(){
+		  if (current_page=="sink"){
+		    draw_sink();
+		  } else if (current_page=="scroller"){
+		    draw_scroller();
+		  }
+		  if (counter % 50=== 0) { // change this number to change how fast they regenerate
+			germGreen.push(new Germ(random(40,1150), random(30, 500), greenGerm));
+		  }
+		  counter++;
+		};
+		
+		void draw_scroller(){
+			background(#003300);
+			for(var i = 0; i < trash.length; i++){
+				trash[i].drawTrash();
+				if (trash[i].collision(person.x, person.y)) {
+					inc_smallHeart();
+					inc_heart(0);
+					console.log(smallHeart);
+				}
+				trash[i].moveTrash();
+				person.drawPerson();
+				person.y += person.xSpeed;
+				//console.log(person.y);
+				if (person.y > windowHeight) {
+					person.xSpeed = 0;		
+				} 
+				if (person.y < 10) {
+					person.xSpeed = 2;
+				}
+			}
+		}
+		
+		void draw_sink(){  
+			imageMode(CORNER);
+			image(backgroundPic,0,0,windowWidth,windowHeight);
+			for(var i = 0; i < germGreen.length; i++){
+				germGreen[i].move();
+				germGreen[i].drawGerm();
+			}	
+			for (var i = 0; i < germPurple.length; i++){
+				germPurple[i].move();
+				germPurple[i].drawGerm();
+			}
+			for (var i = 0; i < germKing.length; i++){
+			germKing[i].move();
+			germKing[i].drawGerm();
+			}
+		}
+		 
+	  // helper functions	
+		$("#button").click(function() {
+		location.href = "index.html";
+		});
+
+
+	</script>
+</body>
+</html>

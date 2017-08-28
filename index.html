@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Germ Attack!!</title>
+
+	<!-- adjusting to the phone's screen -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- jQuery mobile style sheet -->
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css">
+
+	<!-- jQuery and jQuery mobile -->
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+
+	<!-- add ProcessingJS -->
+	<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+	
+	<link rel="stylesheet" href="all.css">
+	
+	<style>
+	    .ui-page {
+		    background:#CC99FF
+	    } 
+	    div.absolute {
+		    position: absolute;
+		    bottom: 15%;
+			right:18%;
+			text-align:center;
+		    width: 900px;
+	    	height: 200px;
+	    	font-size: 50px; 
+        	font-family: Impact;
+		    <!--border: 3px solid #8AC007;-->
+	    }
+	    div.butt {
+		    position: absolute;
+		    bottom: 65%;
+		    right: 75%;
+		    width: 100px;
+		    height: 50px;
+		    <!--border: 3px solid #8AC007;-->
+	    }
+	    div.butt2 {
+	    	position: absolute;
+	    	bottom: 20%;
+	    	right: 5%;
+	    	width: 100px;
+	    	height: 50px;
+	    	<!--border: 3px solid #8AC007;-->
+	    }
+	</style>
+</head>
+
+<body>
+	<canvas id="mycanvas2"></canvas>
+	<div class="absolute"><h1>Suds</h1></div> <!-- Hand Washing Game Title -->
+	<embed src="WashyWashyClean.mp3" autostart="true" loop="true" hidden="true">  
+	<div class="butt"><a href="Sink.html"><img src="http://germpictures.weebly.com/uploads/4/4/9/8/44984345/4147327_orig.png"> </a></div><!-- Play Button -->
+	<div class="butt2"><a href="directionpage.html"><img src="http://germpictures.weebly.com/uploads/4/4/9/8/44984345/4784050_orig.png"> </a></div><!-- Play Button -->
+	<script type="text/processing" data-processing-target="mycanvas2">
+		var windowWidth = $(window).width();
+		var windowHeight = $(window).height();
+		
+		var Bubble = function(xPos,yPos,pic){
+			this.xPos = xPos;
+			this.yPos = yPos;
+			this.pic = loadImage(pic);
+		
+			this.isClicked = function(){
+					var dist = sqrt(pow((mouseX-this.xPos),2) + pow((mouseY-this.yPos),2));
+					if (dist<50){
+						return true; 
+					}
+					else{
+						return false;
+					}
+				}
+		
+			this.drawBubble = function(){
+				imageMode(CENTER);
+				image(this.pic, this.xPos, this.yPos, 120, 120);
+			};
+			this.moveBubble = function(){
+				this.xPos += random(-1,1);
+				this.xPos %= windowWidth;
+				this.yPos += random(-1,5);
+				this.yPos %= windowHeight;
+			};
+		};
+		var bubble = [];
+		var bubbleImage = "http://germpictures.weebly.com/uploads/4/4/9/8/44984345/6017062_orig.png";
+		for(var i = 0; i < round(random(19, 23)); i++){
+			bubble.push(new Bubble(random(0, windowWidth), random(0, windowHeight), bubbleImage));
+		}
+		
+		void mouseClicked() {
+			for (var i = bubble.length-1; i>=0; i--){
+				if(bubble[i].isClicked()){
+					bubble.splice(i,1);
+				}
+			}
+		};
+		
+		void setup(){
+			size(windowWidth,$(window).height());
+		};
+
+		var backgroundPic = loadImage("http://germpictures.weebly.com/uploads/4/4/9/8/44984345/1226509_orig.jpg");
+		void draw(){  
+			imageMode(CORNER);
+			image(backgroundPic,0,0,windowWidth,windowHeight);
+			for(var i = 0; i < bubble.length; i++){
+				bubble[i].drawBubble();
+				bubble[i].moveBubble();
+			}	
+		};
+		$(".butt").click(function() {
+			location.href = "Sink.html";
+		});
+		$(".butt2").click(function() {
+			location.href = "directionpage.html";
+		});
+	</script>
+</body>
+</html>

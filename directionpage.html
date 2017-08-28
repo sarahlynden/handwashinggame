@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+ <html>
+   <head>
+        <meta charset="utf-8">
+	<title>Germ Attack!!</title>
+
+	<!-- adjusting to the phone's screen -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- jQuery mobile style sheet -->
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css">
+
+	<!-- your style sheet -->
+	<link rel="stylesheet" href="all.css">
+	
+	<!-- jQuery and jQuery mobile -->
+	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+
+	<!-- add ProcessingJS -->
+	<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+
+</head>
+	
+</head>
+
+<body>
+	<canvas id="mycanvas2"></canvas>
+	<div class="absolute"><h1 style="font-size:200%">Directions</h1></div> <!-- Hand Washing Game Title -->
+
+	<div class = "directions">Smash the Germs to clean the hands Don't hit the purple germs because they are needed to kill the bad germs
+	On the scroller press the space bar to move the girl and avoid the trash cans to stay clean!</div>
+	
+	<div data-role="footer">
+  		<h4><a id="button" href="#">Home</a></h4>
+  	</div><!-- /footer -->
+  </div>
+  
+	
+	
+	<script type="text/processing" data-processing-target="mycanvas2">
+		var windowWidth = $(window).width();
+		var windowHeight = $(window).height();
+		
+		
+		
+		
+		//bubbles
+		var Bubble = function(xPos,yPos,pic){
+			this.xPos = xPos;
+			this.yPos = yPos;
+			this.pic = loadImage(pic);
+		
+			this.drawBubble = function(){
+				image(this.pic, this.xPos, this.yPos, 120, 120);
+			};
+			this.moveBubble = function(){
+				this.xPos += random(-1,1);
+				this.xPos %= windowWidth;
+				this.yPos += random(-1,5);
+				this.yPos %= windowHeight;
+			};
+		};
+		var bubble = [];
+		var bubbleImage = "http://germpictures.weebly.com/uploads/4/4/9/8/44984345/6017062_orig.png";
+		for(var i = 0; i < round(random(10, 20)); i++){
+			bubble.push(new Bubble(random(0, windowWidth), random(0, windowHeight), bubbleImage));
+		}
+		
+		void setup(){
+			size(windowWidth,$(window).height());
+		};
+
+		var backgroundPic = loadImage("http://germpictures.weebly.com/uploads/4/4/9/8/44984345/1226509_orig.jpg");
+		void draw(){  
+			image(backgroundPic,0,0,windowWidth,windowHeight);
+			for(var i = 0; i < bubble.length; i++){
+				bubble[i].drawBubble();
+				bubble[i].moveBubble();
+				
+
+			}	
+		};
+
+		//links at the bottem
+		$(".butt").click(function() {
+			location.href = "index.html";
+		});
+		$(".butt2").click(function() {
+			location.href = "Sink.html";
+		});
+		$("#button").click(function() {
+		location.href = "index.html";
+		});
+
+	</script>
+</body>
+ </html>
